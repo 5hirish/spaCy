@@ -23,7 +23,7 @@ p
     |  virtual environment to avoid modifying system state:
 
 +code(false, "bash").
-    venv .env
+    python -m venv .env
     source .env/bin/activate
     pip install spacy
 
@@ -121,11 +121,11 @@ p
     |  #[a(href="#source-windows") Windows] for details.
 
 +code(false, "bash").
-    python -m pip install -U pip venv              # update pip & virtualenv
+    python -m pip install -U pip                   # update pip
     git clone #{gh("spaCy")}   # clone spaCy
     cd spaCy                                       # navigate into directory
 
-    venv .env                                      # create environment in .env
+    python -m venv .env                            # create environment in .env
     source .env/bin/activate                       # activate virtual environment
     export PYTHONPATH=`pwd`                        # set Python path to spaCy directory
     pip install -r requirements.txt                # install all requirements
@@ -185,7 +185,7 @@ p
 
 p
     |  Install a version of the
-    |  #[+a("http://landinghub.visualstudio.com/visual-cpp-build-tools") Visual C++ Bulild Tools] or
+    |  #[+a("http://landinghub.visualstudio.com/visual-cpp-build-tools") Visual C++ Build Tools] or
     |  #[+a("https://www.visualstudio.com/vs/visual-studio-express/") Visual Studio Express]
     |  that matches the version that was used to compile your Python
     |  interpreter. For official distributions these are:
@@ -207,14 +207,26 @@ p
 
 p
     |  spaCy comes with an #[+a(gh("spacy", "spacy/tests")) extensive test suite].
-    |  First, find out where spaCy is installed:
+    |  In order to run the tests, you'll usually want to clone the
+    |  #[+a(gh("spacy")) repository] and #[+a("#source") build spaCy from source].
+    |  This will also install the required development dependencies and test
+    |  utilities defined in the #[code requirements.txt].
+
+p
+    |  Alternatively, you can find out where spaCy is installed and run
+    |  #[code pytest] on that directory. Don't forget to also install the
+    |  test utilities via spaCy's
+    |  #[+a(gh("spacy", "requirements.txt")) #[code requirements.txt]]:
 
 +code(false, "bash").
     python -c "import os; import spacy; print(os.path.dirname(spacy.__file__))"
+    pip install -r path/to/requirements.txt
+    python -m pytest &lt;spacy-directory&gt;
 
 p
-    |  Then run #[code pytest] on that directory. The flags #[code --slow] and
-    |  #[code --model] are optional and enable additional tests.
+    |  Calling #[code pytest] on the spaCy directory will run only the basic
+    |  tests. The flags #[code --slow] and #[code --model] are optional and
+    |  enable additional tests that take longer or use specific models.
 
 +code(false, "bash").
     # make sure you are using recent pytest version
@@ -224,3 +236,12 @@ p
     python -m pytest &lt;spacy-directory&gt; --slow          # basic and slow tests
     python -m pytest &lt;spacy-directory&gt; --models --all  # basic and all model tests
     python -m pytest &lt;spacy-directory&gt; --models --en   # basic and English model tests
+
++infobox("Note on model tests", "⚠️")
+    |  The test suite specifies a #[+a(gh("spacy", "spacy/tests/conftest.py")) list of models]
+    |  to run the tests on. If a model is not installed, the tests will be
+    |  skipped. If all models are installed, the respective tests will run once
+    |  for each model. The easiest way to find out which models and model
+    |  versions are available in your current environment is to run
+    |  #[+a("/api/cli#validate") #[code python -m spacy validate]]. This will
+    |  also show whether an installed model is out of date, and how to update it.
